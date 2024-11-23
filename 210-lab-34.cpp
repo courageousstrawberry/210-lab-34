@@ -2,6 +2,7 @@
 #include <vector>
 #include <queue>
 #include <stack>
+#include <climits>  // For INT_MAX (infinity)
 using namespace std;
 
 const int SIZE = 8; // Number of cities in the network
@@ -42,10 +43,49 @@ public:
         }
     }
 
+    // Function to find the shortest path using Dijkstra's algorithm
+    void shortestPath(int start) {
+        vector<int> dist(SIZE, INT_MAX);  // Distance from the start city
+        vector<int> parent(SIZE, -1);     // Parent city for path reconstruction
+        dist[start] = 0;  // Distance to the start city is 0
+
+        // Min-heap priority queue to select the city with the smallest distance
+        priority_queue<Pair, vector<Pair>, greater<Pair>> pq;
+        pq.push(make_pair(0, start));  // Push start city into the queue with distance 0
+
+        while (!pq.empty()) {
+            int u = pq.top().second;  // Get the city with the smallest distance
+            pq.pop();
+
+            // Visit each neighboring city of u
+            for (Pair neighbor : adjList[u]) {
+                int v = neighbor.first;   // Neighbor city
+                int weight = neighbor.second;  // Travel time to the neighbor city
+                
+                // If a shorter path to v is found
+                if (dist[u] + weight < dist[v]) {
+                    dist[v] = dist[u] + weight;  // Update the shortest distance
+                    parent[v] = u;  // Update the parent city
+                    pq.push(make_pair(dist[v], v));  // Push the updated city into the queue
+                }
+            }
+        }
+
+        // Output the shortest path and delivery times from the start city
+        cout << "Shortest path from City " << start << ":\n";
+        for (int i = 0; i < SIZE; i++) {
+            if (dist[i] == INT_MAX) {
+                cout << start << " -> " << i << " : Unreachable\n";
+            } else {
+                cout << start << " -> " << i << " : " << dist[i] << " hours\n";
+            }
+        }
+    }
+
     // Depth-First Search (DFS)
     void DFS(int start) {
         vector<bool> visited(SIZE, false);  // To track visited cities
-        cout << "Network Trace (DFS) from City 0:\nPurpose: Tracing possible delivery routes\n======================================\n";
+        cout << "Network Trace (DFS) from City " << start << ":\nPurpose: Tracing possible delivery routes\n======================================\n";
         DFSUtil(start, visited);  // Helper function for DFS
         cout << endl;
     }
@@ -71,7 +111,7 @@ public:
         visited[start] = true;
         q.push(start);  // Start with the initial city
         
-        cout << "Layer-by-Layer Network Inspection (BFS) from City 0:\nPurpose: Analyzing delivery routes by distance from source\n=================================================\n";
+        cout << "Layer-by-Layer Network Inspection (BFS) from City " << start << ":\nPurpose: Analyzing delivery routes by distance from source\n=================================================\n";
         
         while (!q.empty()) {
             int v = q.front();
@@ -116,11 +156,8 @@ int main() {
     // Print the adjacency list representation of the graph (network)
     graph.printGraph();
 
-    // Perform DFS starting from City 0 (index 0)
-    graph.DFS(0);
-
-    // Perform BFS starting from City 0 (index 0)
-    graph.BFS(0);
+    // Find and print the shortest paths from City 0
+    graph.shortestPath(0);
 
     return 0;
 }
