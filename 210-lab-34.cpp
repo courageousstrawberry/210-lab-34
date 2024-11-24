@@ -129,6 +129,48 @@ public:
         }
         cout << endl;
     }
+
+    // Function to compute the Minimum Spanning Tree (MST) using Prim's Algorithm
+    void minimumSpanningTree() {
+        vector<int> parent(SIZE, -1);   // To store the MST structure
+        vector<int> key(SIZE, INT_MAX);  // To store the minimum weight edge
+        vector<bool> inMST(SIZE, false); // To track which cities are in the MST
+
+        key[0] = 0;  // Start from city 0
+        priority_queue<Pair, vector<Pair>, greater<Pair>> pq;
+        pq.push(make_pair(0, 0));  // Push city 0 into the priority queue with key 0
+
+        while (!pq.empty()) {
+            int u = pq.top().second;  // Get the city with the minimum key
+            pq.pop();
+
+            inMST[u] = true;  // Include city u in MST
+
+            // Check all adjacent cities of u
+            for (Pair neighbor : adjList[u]) {
+                int v = neighbor.first;
+                int weight = neighbor.second;
+
+                // If v is not in MST and the edge u-v is smaller than the current key of v
+                if (!inMST[v] && weight < key[v]) {
+                    key[v] = weight;  // Update the key of v
+                    parent[v] = u;    // Update the parent of v
+                    pq.push(make_pair(key[v], v));  // Push v with updated key into the priority queue
+                }
+            }
+        }
+
+        // Output the MST edges and their weights
+        cout << "\nMinimum Spanning Tree (MST):\n===============================\n";
+        int totalWeight = 0;
+        for (int i = 1; i < SIZE; i++) {
+            if (parent[i] != -1) {
+                cout << "City " << parent[i] << " → City " << i << " (Weight: " << key[i] << " hours)\n";
+                totalWeight += key[i];
+            }
+        }
+        cout << "Total Weight of MST: " << totalWeight << " hours\n";
+    }
 };
 
 int main() {
@@ -158,6 +200,9 @@ int main() {
 
     // Find and print the shortest paths from City 0
     graph.shortestPath(0);
+
+    // Find and print the Minimum Spanning Tree (MST)
+    graph.minimumSpanningTree();
 
     return 0;
 }
