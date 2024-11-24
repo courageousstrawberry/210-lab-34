@@ -173,6 +173,17 @@ public:
     }
 };
 
+void showMenu() {
+    cout << "\n===== Transport Network Menu =====\n";
+    cout << "1. Display Network Topology\n";
+    cout << "2. Find Shortest Path from City\n";
+    cout << "3. Perform Depth-First Search (DFS)\n";
+    cout << "4. Perform Breadth-First Search (BFS)\n";
+    cout << "5. Compute Minimum Spanning Tree (MST)\n";
+    cout << "6. Exit\n";
+    cout << "==================================\n";
+}
+
 int main() {
     // List of roads connecting cities with travel times (edges with weights)
     vector<Edge> edges = {
@@ -195,14 +206,42 @@ int main() {
     // Create the graph object representing the cities and roads
     Graph graph(edges);
     
-    // Print the adjacency list representation of the graph (network)
-    graph.printGraph();
+    int choice, city;
+    
+    do {
+        showMenu();
+        cout << "Enter your choice: ";
+        cin >> choice;
 
-    // Find and print the shortest paths from City 0
-    graph.shortestPath(0);
-
-    // Find and print the Minimum Spanning Tree (MST)
-    graph.minimumSpanningTree();
+        switch (choice) {
+            case 1:
+                graph.printGraph();
+                break;
+            case 2:
+                cout << "Enter the city to start the shortest path search (0-7): ";
+                cin >> city;
+                graph.shortestPath(city);
+                break;
+            case 3:
+                cout << "Enter the city to start the DFS (0-7): ";
+                cin >> city;
+                graph.DFS(city);
+                break;
+            case 4:
+                cout << "Enter the city to start the BFS (0-7): ";
+                cin >> city;
+                graph.BFS(city);
+                break;
+            case 5:
+                graph.minimumSpanningTree();
+                break;
+            case 6:
+                cout << "Exiting the program.\n";
+                break;
+            default:
+                cout << "Invalid choice. Please try again.\n";
+        }
+    } while (choice != 6);
 
     return 0;
 }
